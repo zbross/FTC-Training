@@ -38,27 +38,34 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.Range;
 
 
-/**
- * This file contains an minimal example of a Linear "OpMode". An OpMode is a 'program' that runs in either
- * the autonomous or the teleop period of an FTC match. The names of OpModes appear on the menu
- * of the FTC Driver Station. When an selection is made from the menu, the corresponding OpMode
- * class is instantiated on the Robot Controller and executed.
- *
- * This particular OpMode just executes a basic Tank Drive Teleop for a two wheeled robot
- * It includes all the skeletal structure that all linear OpModes contain.
- *
- * Use Android Studios to Copy this Class, and Paste it into your team's code folder with a new name.
- * Remove or comment out the @Disabled line to add this opmode to the Driver Station OpMode list
+/*
+ * Welcome to Mr. Bross's basic Training TeleOp Code! There is nothing here but drive code,
+ * but wow, it is pretty nice and simple! This is built from a sample code provided by FIRST.
+ * Have a look under
+ * FTC-Training/FtcRobotController/java/org.firstinspires.ftc.robotcontroller/external.samples/
+ * for other great examples!
  */
+
+/*
+ * First we have to define that this is a TeleOp Opmode by using @TeleOp. The example below is
+ * easy to follow. The name and group are not actually necessary, but useful if you want to have
+ * multiple modes. If you do not specify a name, you can only have one mode of that type (one TeleOp
+ * and one Autonomous). You can include @Disabled to disable a particular OpMode. I have commented
+ * it out because I don't want to disable it. This is useful for testing while reducing human error.
+  */
 
 @TeleOp(name="Training TeleOp", group="Linear Opmode")
 //@Disabled
 public class TrainingTeleOp extends LinearOpMode {
 
     // Declare OpMode members.
+    // Notice that because I am using two motors on each side of the robot, they much be
+    // initialized individually.
     private ElapsedTime runtime = new ElapsedTime();
-    private DcMotor leftDrive = null;
-    private DcMotor rightDrive = null;
+    private DcMotor leftDrive1 = null;
+    private DcMotor leftDrive2 = null;
+    private DcMotor rightDrive1 = null;
+    private DcMotor rightDrive2 = null;
 
     @Override
     public void runOpMode() {
@@ -68,27 +75,34 @@ public class TrainingTeleOp extends LinearOpMode {
         // Initialize the hardware variables. Note that the strings used here as parameters
         // to 'get' must correspond to the names assigned during the robot configuration
         // step (using the FTC Robot Controller app on the phone).
-        leftDrive  = hardwareMap.get(DcMotor.class, "left_drive");
-        rightDrive = hardwareMap.get(DcMotor.class, "right_drive");
+        leftDrive1  = hardwareMap.get(DcMotor.class, "left_drive_1");
+        leftDrive2 = hardwareMap.get(DcMotor.class, "left_drive_2");
+        rightDrive1 = hardwareMap.get(DcMotor.class, "right_drive_1");
+        rightDrive2 = hardwareMap.get(DcMotor.class, "right_drive_2");
 
-        // Most robots need the motor on one side to be reversed to drive forward
-        // Reverse the motor that runs backwards when connected directly to the battery
-        leftDrive.setDirection(DcMotor.Direction.REVERSE);
-        rightDrive.setDirection(DcMotor.Direction.FORWARD);
+        // Most robots need the motor(s) on one side to be reversed to drive forward.
+        // Reverse the motor that runs backwards when connected directly to the battery.
+        // This can only be determined with live testing, but is often the left side
+        // in a traditional tank drive setup. Make sure that both motors on the same side
+        // are driving in the same direction, or else there will be serious problems!
+        leftDrive1.setDirection(DcMotor.Direction.REVERSE);
+        leftDrive2.setDirection(DcMotor.Direction.REVERSE);
+        rightDrive1.setDirection(DcMotor.Direction.FORWARD);
+        rightDrive2.setDirection(DcMotor.Direction.FORWARD);
 
-        // Wait for the game to start (driver presses PLAY)
+        // Wait for the game to start (driver presses PLAY).
         waitForStart();
         runtime.reset();
 
-        // run until the end of the match (driver presses STOP)
+        // This is what will actually happen while the OpMode is running,
+        // after the driver presses PLAY and before the driver presses STOP.
         while (opModeIsActive()) {
 
-            // Setup a variable for each drive wheel to save power level for telemetry
+            // Setup a variable for each set of wheels to save power level for telemetry.
             double leftPower;
             double rightPower;
 
-            // Choose to drive using either Tank Mode, or POV Mode
-            // Comment out the method that's not used.  The default below is POV.
+            // Choose to drive using either Tank Mode, or POV Mode by commenting out the other.
 
             // POV Mode uses left stick to go forward, and right stick to turn.
             // - This uses basic math to combine motions and is easier to drive straight.
@@ -99,12 +113,16 @@ public class TrainingTeleOp extends LinearOpMode {
 
             // Tank Mode uses one stick to control each wheel.
             // - This requires no math, but it is hard to drive forward slowly and keep straight.
-            leftPower  = -gamepad1.left_stick_y ;
-            rightPower = -gamepad1.right_stick_y ;
+            // We have to invert the y-dimension of each stick, because +1 points backwards.
+            leftPower  = -gamepad1.left_stick_y;
+            rightPower = -gamepad1.right_stick_y;
 
-            // Send calculated power to wheels
-            leftDrive.setPower(leftPower);
-            rightDrive.setPower(rightPower);
+            // Send power to wheels. If any calculations or adjustments are necessary, do them first.
+            // We used to need to clip the input from -1 to +1, but that is no longer necessary.
+            leftDrive1.setPower(leftPower);
+            leftDrive2.setPower(leftPower);
+            rightDrive1.setPower(rightPower);
+            rightDrive2.setPower(rightPower);
 
             // Show the elapsed game time and wheel power.
             telemetry.addData("Status", "Run Time: " + runtime.toString());
