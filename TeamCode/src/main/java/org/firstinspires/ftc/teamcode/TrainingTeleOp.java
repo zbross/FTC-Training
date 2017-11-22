@@ -105,8 +105,11 @@ public class TrainingTeleOp extends LinearOpMode {
         while (opModeIsActive()) {
 
             // Setup a variable for each set of wheels to save power level for telemetry.
+            // Also setup a variable for each stick on the gamepad.
             double leftPower;
+            double leftInput;
             double rightPower;
+            double rightInput;
 
             // Choose to drive using either Tank Mode, or POV Mode by commenting out the other.
 
@@ -120,8 +123,17 @@ public class TrainingTeleOp extends LinearOpMode {
             // Tank Mode uses one stick to control each wheel.
             // - This requires no math, but it is hard to drive forward slowly and keep straight.
             // We have to invert the y-dimension of each stick, because +1 points backwards.
-            leftPower  = -gamepad1.left_stick_y;
-            rightPower = -gamepad1.right_stick_y;
+            leftInput  = -gamepad1.left_stick_y;
+            rightInput = -gamepad1.right_stick_y;
+
+            // Now that we have input, we need to save the input to the power variable. At this
+            // time, we can choose to optionally scale the input. We do this if we want to make
+            // sure that our robot accelerates a certain way. See the note below under
+            // scaleInput to see how this works. Both scaled and unscaled options are provided.
+            leftPower = scaleInput(leftInput); // Scale left input.
+            // leftPower = leftInput; // Don't scale left input.
+            rightPower= scaleInput(rightInput); // Scale right input.
+            // rightPower = rightInput; // Don't scale right input.
 
             // Send power to wheels. If any calculations or adjustments are necessary, do them first.
             // We used to need to clip the input from -1 to +1, but that is no longer necessary.
@@ -136,7 +148,7 @@ public class TrainingTeleOp extends LinearOpMode {
             if (gamepad2.a) {
                 armServo.setPosition(0.5);
             }
-            else if (gamepad2.b) {
+            else if (gamepad2.y) {
                 armServo.setPosition(1.0);
             }
             else {
@@ -148,5 +160,43 @@ public class TrainingTeleOp extends LinearOpMode {
             telemetry.addData("Motors", "left (%.2f), right (%.2f)", leftPower, rightPower);
             telemetry.update();
         }
+    }
+
+    /*
+     * This method scales the joystick input so for low joystick values, the
+     * scaled value is less than linear.  This is to make it easier to drive
+     * the robot more precisely at slower speeds.
+     */
+    double scaleInput(double dVal) {
+        // Define the values for the scale. Notice how the values don't change by a lot at the
+        // beginning but change a lot at the higher levels? This means that there will be a
+        // small change in speed when you move the stick a little bit, but a large change
+        // in speed as you push more. You can change these values to adjust that.
+        double[] scaleArray = {0.0, 0.05, 0.09, 0.10, 0.12, 0.15, 0.18, 0.24,
+                0.30, 0.36, 0.43, 0.50, 0.60, 0.72, 0.85, 1.00, 1.00};
+
+        // get the corresponding index for the scaleInput array.
+        int index = (int) (dVal * 16.0);
+
+        // index should be positive.
+        if (index < 0) {
+            index = -index;
+        }
+
+        // index cannot exceed size of array minus 1.
+        if (index > 16) {
+            index = 16;
+        }
+
+        // get value from the array.
+        double dScale = 0.0;
+        if (dVal < 0) {
+            dScale = -scaleArray[index];
+        } else {
+            dScale = scaleArray[index];
+        }
+
+        // return scaled value.
+        return dScale;
     }
 }
