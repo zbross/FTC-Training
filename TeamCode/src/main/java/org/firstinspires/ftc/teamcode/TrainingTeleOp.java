@@ -33,6 +33,7 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.util.ElapsedTime;
 import com.qualcomm.robotcore.util.Range;
@@ -66,6 +67,7 @@ public class TrainingTeleOp extends LinearOpMode {
     private DcMotor leftDrive2 = null;
     private DcMotor rightDrive1 = null;
     private DcMotor rightDrive2 = null;
+    private Servo armServo = null;
 
     @Override
     public void runOpMode() {
@@ -79,6 +81,7 @@ public class TrainingTeleOp extends LinearOpMode {
         leftDrive2 = hardwareMap.get(DcMotor.class, "left_drive_2");
         rightDrive1 = hardwareMap.get(DcMotor.class, "right_drive_1");
         rightDrive2 = hardwareMap.get(DcMotor.class, "right_drive_2");
+        armServo = hardwareMap.get(Servo.class, "arm_servo");
 
         // Most robots need the motor(s) on one side to be reversed to drive forward.
         // Reverse the motor that runs backwards when connected directly to the battery.
@@ -89,6 +92,9 @@ public class TrainingTeleOp extends LinearOpMode {
         leftDrive2.setDirection(DcMotor.Direction.REVERSE);
         rightDrive1.setDirection(DcMotor.Direction.FORWARD);
         rightDrive2.setDirection(DcMotor.Direction.FORWARD);
+
+        // Set the servo to its starting position, in this case, zero
+        armServo.setPosition(0);
 
         // Wait for the game to start (driver presses PLAY).
         waitForStart();
@@ -123,6 +129,19 @@ public class TrainingTeleOp extends LinearOpMode {
             leftDrive2.setPower(leftPower);
             rightDrive1.setPower(rightPower);
             rightDrive2.setPower(rightPower);
+
+            // Control the servo. I want to make it so that if the A button is pressed, the servo is
+            // set to 90 degrees (halfway). If the Y button is pressed, the servo will be set
+            // to 180 degrees (all the way). If either button is not being pressed, set back to zero.
+            if (gamepad2.a) {
+                armServo.setPosition(0.5);
+            }
+            else if (gamepad2.y) {
+                armServo.setPosition(1.0);
+            }
+            else {
+                armServo.setPosition(0.0);
+            }
 
             // Show the elapsed game time and wheel power.
             telemetry.addData("Status", "Run Time: " + runtime.toString());
