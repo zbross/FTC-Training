@@ -136,7 +136,7 @@ public class TrainingTeleOp extends LinearOpMode {
             if (gamepad2.a) {
                 armServo.setPosition(0.5);
             }
-            else if (gamepad2.y) {
+            else if (gamepad2.b) {
                 armServo.setPosition(1.0);
             }
             else {
