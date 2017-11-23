@@ -120,7 +120,7 @@ public class TrainingTeleOp extends LinearOpMode {
             // leftPower    = Range.clip(drive + turn, -1.0, 1.0) ;
             // rightPower   = Range.clip(drive - turn, -1.0, 1.0) ;
 
-            // Tank Mode uses one stick to control each wheel.
+            // Tank Mode uses one stick to control each side.
             // - This requires no math, but it is hard to drive forward slowly and keep straight.
             // We have to invert the y-dimension of each stick, because +1 points backwards.
             leftInput  = -gamepad1.left_stick_y;
@@ -128,8 +128,8 @@ public class TrainingTeleOp extends LinearOpMode {
 
             // Now that we have input, we need to save the input to the power variable. At this
             // time, we can choose to optionally scale the input. We do this if we want to make
-            // sure that our robot accelerates a certain way. See the note below under
-            // scaleInput to see how this works. Both scaled and unscaled options are provided.
+            // sure that our robot accelerates a certain way. See the note below under scaleInput
+            // to see how this works. Both scaled and unscaled options are provided. Use only one.
             leftPower = scaleInput(leftInput); // Scale left input.
             // leftPower = leftInput; // Don't scale left input.
             rightPower= scaleInput(rightInput); // Scale right input.
@@ -142,7 +142,7 @@ public class TrainingTeleOp extends LinearOpMode {
             rightDrive1.setPower(rightPower);
             rightDrive2.setPower(rightPower);
 
-            // Control the servo. I want to make it so that if the A button is pressed, the servo is
+            // Servo control: I want to make it so that if the A button is pressed, the servo is
             // set to 90 degrees (halfway). If the Y button is pressed, the servo will be set
             // to 180 degrees (all the way). If either button is not being pressed, set back to zero.
             if (gamepad2.a) {
