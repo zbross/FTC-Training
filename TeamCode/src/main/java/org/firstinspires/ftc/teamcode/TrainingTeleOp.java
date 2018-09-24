@@ -142,8 +142,8 @@ public class TrainingTeleOp extends LinearOpMode {
             rightDrive1.setPower(rightPower);
             rightDrive2.setPower(rightPower);
 
-            // Servo control: I want to make it so that if the A button is pressed, the servo is
-            // set to 90 degrees (halfway). If the Y button is pressed, the servo will be set
+            // Servo control: I want to make it so that if the A button is being pressed, the servo is
+            // set to 90 degrees (halfway). If the Y button is being pressed, the servo will be set
             // to 180 degrees (all the way). If either button is not being pressed, set back to zero.
             if (gamepad2.a) {
                 armServo.setPosition(0.5);
