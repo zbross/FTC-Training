@@ -60,7 +60,7 @@ import com.qualcomm.robotcore.util.Range;
 public class TrainingTeleOp extends LinearOpMode {
 
     // Declare OpMode members.
-    // Notice that because I am using two motors on each side of the robot, they much be
+    // Notice that because I am using two motors on each side of the robot, they must be
     // initialized individually.
     private ElapsedTime runtime = new ElapsedTime();
     private DcMotor leftDrive1 = null;
